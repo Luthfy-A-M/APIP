@@ -23,4 +23,23 @@ Route::get('department/{dept_code}/dh', [DepartmentController::class, 'getDepart
 
 //====================TBM ROUTING=====================
 
+use App\Http\Controllers\TBMController;
+//dont use sanctum yet due time limit
 
+// Get all TBM data
+Route::get('/tbms', [TBMController::class, 'index']);
+
+// Create a new TBM entry
+Route::post('/tbms', [TBMController::class, 'store']);
+
+// Get a specific TBM entry by ID
+Route::get('/tbms/{id}', [TBMController::class, 'show']);
+
+// Update a specific TBM entry by ID
+Route::put('/tbms/{id}', [TBMController::class, 'update']);
+
+// Delete a specific TBM entry by ID
+Route::delete('/tbms/{id}', [TBMController::class, 'destroy']);
+
+// Search TBM data by parameters
+Route::get('/tbms/search/{param1}/{param2}', [TBMController::class, 'searchby']);

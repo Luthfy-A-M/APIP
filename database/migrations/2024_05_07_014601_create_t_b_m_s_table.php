@@ -11,16 +11,16 @@ class CreateTBMSTable extends Migration
         Schema::create('t_b_m_s', function (Blueprint $table) {
             $table->id();
             $table->string('dept_code');
-            $table->string('section');
-            $table->string('shift');
-            $table->dateTime('date');
-            $table->string('time');
-            $table->string('title');
-            $table->string('pot_danger_point');
-            $table->string('most_danger_point');
-            $table->string('key_word');
+            $table->string('section')->nullable();
+            $table->string('shift')->nullable();
+            $table->dateTime('date')->nullable();
+            $table->string('time')->nullable();
+            $table->string('title')->nullable();
+            $table->string('pot_danger_point')->nullable();
+            $table->string('most_danger_point')->nullable();
+            $table->string('key_word')->nullable();
             $table->string('prepared_by');
-            $table->dateTime('prepared_by_sign_date');
+            $table->dateTime('prepared_by_sign_date')->nullable();
             $table->string('checked_by')->nullable();
             $table->dateTime('checked_by_sign_date')->nullable();
             $table->string('reviewed_by')->nullable();
@@ -29,7 +29,7 @@ class CreateTBMSTable extends Migration
             $table->dateTime('approved1_by_sign_date')->nullable();
             $table->string('approved2_by')->nullable();
             $table->dateTime('approved2_by_sign_date')->nullable();
-            $table->string('status');
+            $table->string('status')->default("draft");
             $table->timestamps();
         });
     }

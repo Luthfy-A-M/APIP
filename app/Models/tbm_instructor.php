@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class tbm_instructor extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'tbm_id',
+        'instructor_id',
+        'signed_date' => 'datetime',
+    ];
 }

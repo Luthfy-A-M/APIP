@@ -24,10 +24,22 @@ class TBMController extends Controller
     public function store(Request $request)
     {
         try {
+            if ($request->getMethod() !== 'POST') {
+                // If the request method is not POST, return a response indicating that POST method is required
+                return response()->json(['error' => 'POST method is required'], 405);
+            }
             // Validasi request
             $request->validate([
-                // Definisikan validasi sesuai kebutuhan
+                //if this is a new store then the user that make it will be the one appear on prepared by
+                'user_id' => 'required|string|max:255', //// Validate prepared_by is required and is a string with maximum length of 255 characters
+                'dept_code' => 'required|string|max:255', // Validate dept_code is required and is a string with maximum length of 255 characters
+            ],[
+                'user_id.required' => 'The user ID is required.',
+                'dept_code.required' => 'The department code is required.',
             ]);
+
+            $request->merge(['prepared_by' => $request->user_id]);
+            $request->merge(['status' => $request->user_id]);
 
             // Membuat entri baru TBMS
             $tbms = TBM::create($request->all());
@@ -57,6 +69,10 @@ class TBMController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            if ($request->getMethod() !== 'POST') {
+                // If the request method is not POST, return a response indicating that POST method is required
+                return response()->json(['error' => 'POST method is required'], 405);
+            }
             // Validasi request
             $request->validate([
                 // Definisikan validasi sesuai kebutuhan
@@ -92,4 +108,16 @@ class TBMController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function searchby($param1, $param2){
+        try{
+            //Get TBM Data Using Where 'id' = 1
+            $tbms = TBM::where($param1, $param2)->Get();
+            return response()->json($tbms);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

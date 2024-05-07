@@ -12,6 +12,11 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
+
+            if ($request->getMethod() !== 'POST') {
+                // If the request method is not POST, return a response indicating that POST method is required
+                return response()->json(['error' => 'POST method is required'], 405);
+            }
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255', // Name
                 'email' => 'required|string|email|max:255', // Email or nik
@@ -43,6 +48,10 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
+            if ($request->getMethod() !== 'POST') {
+                // If the request method is not POST, return a response indicating that POST method is required
+                return response()->json(['error' => 'POST method is required'], 405);
+            }
             $credentials = $request->only('email', 'password');
 
             if (Auth::attempt($credentials)) {
