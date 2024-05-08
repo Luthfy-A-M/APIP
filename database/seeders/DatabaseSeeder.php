@@ -67,6 +67,26 @@ class DatabaseSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        DB::table('t_b_m_s')->insert([
+            'dept_code' => 'ITBD',
+         'section' => 'PC',
+          'shift' => '2',
+           'date' => now(),
+            'time' => '09:00',
+             'title' => 'TBM Naik Crane' ,
+             'pot_danger_point' => 'Jatoh',
+             'most_danger_point' => 'Kecapit Crane',
+             'key_word' => 'Hati Hati',
+             'prepared_by' => '1',
+             'checked_by' => '2',
+             'reviewed_by'=>'3',
+             'approved1_by'=>'4',
+             'approved2_by' => '5',
+             'status' => 'draft',
+             'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
 
 
     }

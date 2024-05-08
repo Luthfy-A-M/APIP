@@ -31,6 +31,10 @@ Route::get('/tbms', [TBMController::class, 'index']); //get all tbm
 
 // Create a new TBM entry
 Route::post('/tbms', [TBMController::class, 'store']); //create tbm
+// {
+//     "user_id": 1,
+//     "dept_code": "ITBD"
+// }
 
 // Get a specific TBM entry by ID
 Route::get('/tbms/{id}', [TBMController::class, 'show']);//get tbm details
@@ -57,9 +61,20 @@ Route::post('/tbms/create/assignattendant', [TBMController::class, 'assignAttend
 //     "tbm_id": 1,
 //     "attendant_id": 3
 // }
+Route::get('/tbms/create/unassignattendant', [TBMController::class, 'unassignAttendant']);
+
 Route::post('/tbms/create/assigninstructor', [TBMController::class, 'assignInstructor']);
 // {
 //     "tbm_id": 1,
 //     "instructor_id": 3
 // }
-Route::post('/tbms/create/{param1}/release',[TBMController::class, 'postReleaseTbm']); //when releasing the TBM
+Route::get('/tbms/create/unassigninstructor', [TBMController::class, 'unassignInstructor']); //untuk assign dan unassign gaperlu check kepemilikannya malaz
+
+Route::post('/tbms/create/release',[TBMController::class, 'postReleaseTbm']); //when releasing the TBM
+// {
+//     "tbm_id": 3 bisa
+// }
+//bisa sekalian update tbm, beuh
+//ketentuan -> harus udah assign instructor dan orang sebelum release, masa iya gaada orangnya cok
+//kalo belom keluar error
+

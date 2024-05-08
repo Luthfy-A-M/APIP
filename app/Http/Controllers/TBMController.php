@@ -40,15 +40,15 @@ class TBMController extends Controller
             // Validasi request
             $request->validate([
                 //if this is a new store then the user that make it will be the one appear on prepared by
-                'user_id' => 'required|string|max:255', //// Validate prepared_by is required and is a string with maximum length of 255 characters
-                'dept_code' => 'required|string|max:255', // Validate dept_code is required and is a string with maximum length of 255 characters
+                'user_id' => 'required', //// Validate prepared_by is required and is a string with maximum length of 255 characters
+                'dept_code' => 'required', // Validate dept_code is required and is a string with maximum length of 255 characters
             ],[
                 'user_id.required' => 'The user ID is required.',
                 'dept_code.required' => 'The department code is required.',
             ]);
 
             $request->merge(['prepared_by' => $request->user_id]);
-            $request->merge(['status' => $request->user_id]);
+            $request->merge(['status' => 'draft']);
 
             // Membuat entri baru TBMS
             $tbms = TBM::create($request->all());
@@ -86,12 +86,12 @@ class TBMController extends Controller
             // Validasi request
             $request->validate([
                 'user_id'=>'required',
-                'id'=>'required'
+                'tbm_id'=>'required'
             ],[
                 'user_id.required' => 'The User ID is required',
-                'id.required' => 'The ID (TBM ID) is required'
+                'tbm_id.required' => 'The tbm_id is required'
             ]);
-            $id = $request->id;
+            $id = $request->tbm_id;
             // Mengambil data TBMS berdasarkan ID
             $tbms = TBM::findOrFail($id);
 
@@ -195,6 +195,28 @@ class TBMController extends Controller
         }
     }
 
+    public function unassignAttendant(Request $request){
+        try{
+            //tbm_id
+            //user_id
+            $validator = Validator::make($request->all(), [
+                'tbm_id' => 'required', // Validate 'tbm_id' as required and numeric
+                'attendant_id' => 'required', // Validate 'attendant_id' as required and string
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            TBM::findOrFail($request->tbm_id);
+
+            return (new tbm_attendantController())->Destroy($request);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function assignInstructor(Request $request){
         try{
             //tbm_id
@@ -216,12 +238,34 @@ class TBMController extends Controller
         }
     }
 
-
-    public function postReleaseTbm(Request $request, $id){
+    public function unassignInstructor(Request $request){
         try{
+            //tbm_id
+            //user_id
+            $validator = Validator::make($request->all(), [
+                'tbm_id' => 'required', // Validate 'tbm_id' as required and numeric
+                'instructor_id' => 'required', // Validate 'instructor_id' as required and string
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            TBM::findOrFail($request->tbm_id);
+            return (new tbm_instructorController())->destroy($request);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function postReleaseTbm(Request $request){
+        try{
+            $id = $request->tbm_id;
                 //here we handle when user click release on tbm
             //first we update the TBM
-            $this->update($request, $id);
+            $this->update($request);
             //make sure the TBM is ready to released by checking theres no empty or null value on TBM
             $tbms = TBM::findOrFail($id);
 
@@ -273,9 +317,9 @@ class TBMController extends Controller
             //after we check all the tbm release data then we check the assigned and instructor, atleast have 1 of em
             //check attendance & instructor atleast 1
             $attender = (new tbm_attendantController())->getTbmAttendants($id)->count();
-            $instructor = (new tbm_instructorController())->getTbmInstructor(($id)->count());
+            $instructor = (new tbm_instructorController())->getTbmInstructor($id)->count();
             // dd($attender);
-            if($attender < 1 && $instructor < 1 ){
+            if($attender < 1 || $instructor < 1 ){
                 return response()->json(['errors' => 'Make Sure you assign atleast one instructor and attender']);
             }
 
