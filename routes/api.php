@@ -27,19 +27,39 @@ use App\Http\Controllers\TBMController;
 //dont use sanctum yet due time limit
 
 // Get all TBM data
-Route::get('/tbms', [TBMController::class, 'index']);
+Route::get('/tbms', [TBMController::class, 'index']); //get all tbm
 
 // Create a new TBM entry
-Route::post('/tbms', [TBMController::class, 'store']);
+Route::post('/tbms', [TBMController::class, 'store']); //create tbm
 
 // Get a specific TBM entry by ID
-Route::get('/tbms/{id}', [TBMController::class, 'show']);
+Route::get('/tbms/{id}', [TBMController::class, 'show']);//get tbm details
 
 // Update a specific TBM entry by ID
-Route::put('/tbms/{id}', [TBMController::class, 'update']);
+Route::put('/tbms/{id}', [TBMController::class, 'update']); //normal update,
 
 // Delete a specific TBM entry by ID
 Route::delete('/tbms/{id}', [TBMController::class, 'destroy']);
 
 // Search TBM data by parameters
-Route::get('/tbms/search/{param1}/{param2}', [TBMController::class, 'searchby']);
+Route::get('/tbms/create/search/{param1}/{param2}', [TBMController::class, 'searchby']); //idk for what
+Route::get('/tbms/create/Getassignableperson', [TBMController::class, 'getAssignablePerson']);
+// {
+//     "tbm_id": [
+//       "The tbm id field is required."
+//     ],
+//     "dept_code": [
+//       "The dept code field is required."
+//     ]
+//   }
+Route::post('/tbms/create/assignattendant', [TBMController::class, 'assignAttendant']);
+// {
+//     "tbm_id": 1,
+//     "attendant_id": 3
+// }
+Route::post('/tbms/create/assigninstructor', [TBMController::class, 'assignInstructor']);
+// {
+//     "tbm_id": 1,
+//     "instructor_id": 3
+// }
+Route::post('/tbms/create/{param1}/release',[TBMController::class, 'postReleaseTbm']); //when releasing the TBM

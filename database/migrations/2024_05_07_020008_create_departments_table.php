@@ -11,15 +11,15 @@ class CreateDepartmentsTable extends Migration
             $table->id();
             $table->string('dept_code');
             $table->string('dept_name');
-            $table->string('GL1');
-            $table->string('GL2');
-            $table->string('GL3');
-            $table->string('SPV1');
-            $table->string('SPV2');
-            $table->string('SPV3');
-            $table->string('MGR1');
-            $table->string('MGR2');
-            $table->string('Dept_Head');
+            $table->string('GL1')->nullable();
+            $table->string('GL2')->nullable();
+            $table->string('GL3')->nullable();
+            $table->string('SPV1')->nullable();
+            $table->string('SPV2')->nullable();
+            $table->string('SPV3')->nullable();
+            $table->string('MGR1')->nullable();
+            $table->string('MGR2')->nullable();
+            $table->string('Dept_Head')->nullable();
             $table->timestamps();
         });
     }

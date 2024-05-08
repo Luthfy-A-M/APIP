@@ -3,7 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+use App\Http\Controllers\tbm_attendantController; //tbm attendant
+use App\Http\Controllers\tbm_InstructorController; //tbm instructor
+
 use App\Models\TBM;
+use App\Models\User;
+
+
+
 
 class TBMController extends Controller
 {
@@ -57,6 +66,7 @@ class TBMController extends Controller
         try {
             // Mengambil data TBMS berdasarkan ID
             $tbms = TBM::findOrFail($id);
+            //get assigned instructor and person
 
             // Mengembalikan data dalam bentuk JSON
             return response()->json($tbms);
@@ -66,20 +76,28 @@ class TBMController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         try {
-            if ($request->getMethod() !== 'POST') {
-                // If the request method is not POST, return a response indicating that POST method is required
-                return response()->json(['error' => 'POST method is required'], 405);
+            if ($request->getMethod() !== 'PUT') {
+                // If the request method is not PUT, return a response indicating that POST method is required
+                return response()->json(['error' => 'PUT method is required'], 405);
             }
             // Validasi request
             $request->validate([
-                // Definisikan validasi sesuai kebutuhan
+                'user_id'=>'required',
+                'id'=>'required'
+            ],[
+                'user_id.required' => 'The User ID is required',
+                'id.required' => 'The ID (TBM ID) is required'
             ]);
-
+            $id = $request->id;
             // Mengambil data TBMS berdasarkan ID
             $tbms = TBM::findOrFail($id);
+
+            if($request->user_id !== $tbms->prepared_by){
+                return response()->json(['error' => 'You Dont have access']);
+            }
 
             // Memperbarui data TBMS
             $tbms->update($request->all());
@@ -113,6 +131,159 @@ class TBMController extends Controller
         try{
             //Get TBM Data Using Where 'id' = 1
             $tbms = TBM::where($param1, $param2)->Get();
+            return response()->json($tbms);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getAssignablePerson(Request $request){
+        try{
+            //receive json
+            //dept_code
+            //tbm_id
+             // Validate the JSON data
+            $validator = Validator::make($request->all(), [
+                'tbm_id' => 'required', // Validate 'tbm_id' as required and numeric
+                'dept_code' => 'required', // Validate 'dept_code' as required and string
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+
+            $jsonData = $request->json()->all();
+
+            $excludedAttendantIds = (new tbm_attendantController())->getTbmAttendants($request->tbm_id)->pluck('attendant_id');
+
+
+            $excludedInstructorIds = (new tbm_instructorController())->getTbmInstructor($request->tbm_id)->pluck('instructor_id');
+
+            $persons = User::select('id','name')->where('dept_code', $request->dept_code)
+            ->whereNotIn('id', $excludedAttendantIds)
+            ->whereNotIn('id', $excludedInstructorIds)
+            ->get();
+
+            return response()->json($persons);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function assignAttendant(Request $request){
+        try{
+            //tbm_id
+            //user_id
+            $validator = Validator::make($request->all(), [
+                'tbm_id' => 'required', // Validate 'tbm_id' as required and numeric
+                'attendant_id' => 'required', // Validate 'attendant_id' as required and string
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            TBM::findOrFail($request->tbm_id);
+
+            return (new tbm_attendantController())->Store($request);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function assignInstructor(Request $request){
+        try{
+            //tbm_id
+            //user_id
+            $validator = Validator::make($request->all(), [
+                'tbm_id' => 'required', // Validate 'tbm_id' as required and numeric
+                'instructor_id' => 'required', // Validate 'instructor_id' as required and string
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+            TBM::findOrFail($request->tbm_id);
+            return (new tbm_instructorController())->Store($request);
+        }
+        catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function postReleaseTbm(Request $request, $id){
+        try{
+                //here we handle when user click release on tbm
+            //first we update the TBM
+            $this->update($request, $id);
+            //make sure the TBM is ready to released by checking theres no empty or null value on TBM
+            $tbms = TBM::findOrFail($id);
+
+                    // Define the validation rules
+            $rules = [
+                'dept_code' => 'required',
+                'section' => 'required',
+                'shift' => 'required',
+                'date' => 'required',
+                'time' => 'required',
+                'title' => 'required',
+                'pot_danger_point' => 'required',
+                'most_danger_point' => 'required',
+                'key_word' => 'required',
+                'prepared_by' => 'required',
+                'checked_by' => 'required',
+                'reviewed_by' => 'required',
+                'approved1_by' => 'required',
+                'approved2_by' => 'required',
+                // Not signed yet
+            ];
+
+            // Define custom error messages for validation failures
+            $messages = [
+                'dept_code.required' => 'The dept code is required.',
+                'section.required' => 'The section is required.',
+                'shift.required' => 'The shift is required.',
+                'date.required' => 'The date is required.',
+                'time.required' => 'The time is required.',
+                'title.required' => 'The title is required.',
+                'pot_danger_point.required' => 'The pot danger point is required.',
+                'most_danger_point.required' => 'The most danger point is required.',
+                'key_word.required' => 'The key word is required.',
+                'prepared_by.required' => 'The prepared by is required.',
+                'checked_by.required' => 'The checked by is required.',
+                'reviewed_by.required' => 'The reviewed by is required.',
+                'approved1_by.required' => 'The approved 1 by is required.',
+                'approved2_by.required' => 'The approved 2 by is required.',
+            ];
+
+            // Perform validation
+            $validator = Validator::make($tbms->toArray(), $rules, $messages);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                // Return response with validation errors
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            //after we check all the tbm release data then we check the assigned and instructor, atleast have 1 of em
+            //check attendance & instructor atleast 1
+            $attender = (new tbm_attendantController())->getTbmAttendants($id)->count();
+            $instructor = (new tbm_instructorController())->getTbmInstructor(($id)->count());
+            // dd($attender);
+            if($attender < 1 && $instructor < 1 ){
+                return response()->json(['errors' => 'Make Sure you assign atleast one instructor and attender']);
+            }
+
+            $tbms->update([
+                'prepared_by_signed_date' => now(),
+                'status' => 'released'
+            ]);
+
             return response()->json($tbms);
         }
         catch(\Exception $e){
