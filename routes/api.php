@@ -72,9 +72,12 @@ Route::get('/tbms/create/unassigninstructor', [TBMController::class, 'unassignIn
 
 Route::post('/tbms/create/release',[TBMController::class, 'postReleaseTbm']); //when releasing the TBM
 // {
-//     "tbm_id": 3 bisa
+//     "tbm_id": 3 
+//      "user_id" : 1
 // }
 //bisa sekalian update tbm, beuh
-//ketentuan -> harus udah assign instructor dan orang sebelum release, masa iya gaada orangnya cok
+//ketentuan -> harus udah assign instructor dan attendant sebelum release, masa iya gaada orangnya cok
 //kalo belom keluar error
+
+Route::get('/tbms/MyTBM/get', [TBMController::class,'getMyUnassignTBM']); //get tbm yang belom ditandatangan
 

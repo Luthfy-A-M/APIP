@@ -56,8 +56,54 @@ class tbm_attendantController extends Controller
     {
         try {
             $attendants = Tbm_Attendant::where('tbm_id', $tbm_id)->get();
-            return response()->json(['attendants' => $attendants], 200);
+            return $attendants;
         } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function getMyTbmAttendance(Request $request){
+        try {
+            $tbm_id = $request->tbm_id;
+            $user_id = $request->user_id;
+            $attendance = Tbm_Attendant::where('tbm_id',$tbm_id)->where('attendant_id',$user_id)->firstOrFail();
+            return response()->json(['attendants' => $attendance], 200);
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function getMyUnsignedTbmAttendance(Request $request){
+        try {
+            $request->validate([
+                'user_id'=>'required',
+            ],[
+                'user_id.required' => 'The User ID is required',
+            ]);
+            $attendances = Tbm_Attendant::where('attendant_id', $request->user_id)
+            ->whereNull('signed_date')
+            ->get();
+            return response()->json(['attendants' => $attendances], 200);
+
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function signTbmAttendants(Request $request){
+        try {
+            //here we try to check if he really is the one who need to sign in
+            $tbm_attendance_id  = $request->tbm_attendance_id;
+            $tbm_attandance_user_id = $request->user_id;
+            $attendant = Tbm_Attendant::findOrFail($tbm_attendance_id);
+            if($attendant->attendant_id == $tbm_attandance_user_id){
+                $attendant->update(['signed_date',now()]); //just update the signed date, nothing else
+            }
+            return response()->json(['tbm attendance' => $attendant], 200); //return updated tbm_attendant
+        }
+        catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

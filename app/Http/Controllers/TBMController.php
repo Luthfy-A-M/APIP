@@ -262,8 +262,16 @@ class TBMController extends Controller
 
     public function postReleaseTbm(Request $request){
         try{
+            $request->validate([
+                'user_id'=>'required',
+                'tbm_id'=>'required'
+            ],[
+                'user_id.required' => 'The user_id is required',
+                'tbm_id.required' => 'The tbm_id is required'
+            ]);
+
             $id = $request->tbm_id;
-                //here we handle when user click release on tbm
+            //here we handle when user click release on tbm
             //first we update the TBM
             $this->update($request);
             //make sure the TBM is ready to released by checking theres no empty or null value on TBM
@@ -324,7 +332,7 @@ class TBMController extends Controller
             }
 
             $tbms->update([
-                'prepared_by_signed_date' => now(),
+                'prepared_by_sign_date' => now(),
                 'status' => 'released'
             ]);
 
@@ -334,5 +342,73 @@ class TBMController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    
+
+    
+
+    public function getMyUnassignTBM(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required'
+            ]);
+    
+            // Initialize an empty collection to store merged results
+            $mergedTbms = collect();
+    
+            // Query and merge tbms where the user is assigned as different signers
+            $tbmsChecker = TBM::select('title', 'id', 'date', 'checked_by as prepared_by')
+                ->where('checked_by', $request->user_id)
+                ->whereNotNull('prepared_by_sign_date')
+                ->get();
+    
+            $tbmsReviewer = TBM::select('title', 'id', 'date', 'reviewed_by as prepared_by')
+                ->where('reviewed_by', $request->user_id)
+                ->whereNotNull('checked_by_sign_date')
+                ->get();
+    
+            $tbmsApprove1 = TBM::select('title', 'id', 'date', 'approved1_by as prepared_by')
+                ->where('approved1_by', $request->user_id)
+                ->whereNotNull('reviewed_by_sign_date')
+                ->get();
+    
+            $tbmsApprove2 = TBM::select('title', 'id', 'date', 'approved2_by as prepared_by')
+                ->where('approved2_by', $request->user_id)
+                ->whereNotNull('approved1_by_sign_date')
+                ->get();
+    
+            // Merge all collections into a single collection
+            $mergedTbms = $mergedTbms->merge($tbmsChecker)
+                ->merge($tbmsReviewer)
+                ->merge($tbmsApprove1)
+                ->merge($tbmsApprove2);
+    
+            // Get unique user IDs from merged TBMs
+            $userIds = $mergedTbms->pluck('prepared_by')->unique()->toArray();
+    
+            // Fetch user names based on user IDs
+            $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+    
+            // Attach user names to each TBM
+            foreach ($mergedTbms as $tbm) {
+                $tbm->prepared_by_user = $users[$tbm->prepared_by] ?? null;
+            }
+    
+            // Check if there are any TBM records found
+            if ($mergedTbms->isEmpty()) {
+                return response()->json('Nothing to be signed');
+            }
+    
+            // Return the merged TBM records
+            return response()->json($mergedTbms);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+    
+
+
+
 
 }
