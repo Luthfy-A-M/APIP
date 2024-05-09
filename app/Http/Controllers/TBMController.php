@@ -358,24 +358,28 @@ class TBMController extends Controller
             $mergedTbms = collect();
     
             // Query and merge tbms where the user is assigned as different signers
-            $tbmsChecker = TBM::select('title', 'id', 'date', 'checked_by as prepared_by')
+            $tbmsChecker = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('checked_by', $request->user_id)
                 ->whereNotNull('prepared_by_sign_date')
+                ->whereNull('checked_by_sign_date')
                 ->get();
     
-            $tbmsReviewer = TBM::select('title', 'id', 'date', 'reviewed_by as prepared_by')
+            $tbmsReviewer = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('reviewed_by', $request->user_id)
                 ->whereNotNull('checked_by_sign_date')
+                ->whereNull('reviewed_by_sign_date')
                 ->get();
     
-            $tbmsApprove1 = TBM::select('title', 'id', 'date', 'approved1_by as prepared_by')
+            $tbmsApprove1 = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('approved1_by', $request->user_id)
                 ->whereNotNull('reviewed_by_sign_date')
+                ->whereNull('approved1_by_sign_date')
                 ->get();
     
-            $tbmsApprove2 = TBM::select('title', 'id', 'date', 'approved2_by as prepared_by')
+            $tbmsApprove2 = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('approved2_by', $request->user_id)
                 ->whereNotNull('approved1_by_sign_date')
+                ->whereNull('approved2_by_sign_date')
                 ->get();
     
             // Merge all collections into a single collection
