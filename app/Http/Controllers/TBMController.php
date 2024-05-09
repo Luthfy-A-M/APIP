@@ -69,7 +69,11 @@ class TBMController extends Controller
             //get assigned instructor and person
 
             // Mengembalikan data dalam bentuk JSON
-            return response()->json($tbms);
+            return response()->json([
+                'tbm' => $tbms , 
+                'tbm_instructor' => (new tbm_InstructorController())->getTbmInstructor($id) ,
+                'tbm_attendance' => (new tbm_attendantController())->getTbmAttendants(($id))
+            ]);
         } catch (\Exception $e) {
             // Mengembalikan pesan kesalahan jika terjadi kesalahan
             return response()->json(['error' => $e->getMessage()], 404);
@@ -157,7 +161,6 @@ class TBMController extends Controller
             $jsonData = $request->json()->all();
 
             $excludedAttendantIds = (new tbm_attendantController())->getTbmAttendants($request->tbm_id)->pluck('attendant_id');
-
 
             $excludedInstructorIds = (new tbm_instructorController())->getTbmInstructor($request->tbm_id)->pluck('instructor_id');
 

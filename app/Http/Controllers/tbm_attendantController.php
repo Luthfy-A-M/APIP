@@ -84,7 +84,7 @@ class tbm_attendantController extends Controller
             $attendances = Tbm_Attendant::where('attendant_id', $request->user_id)
             ->whereNull('signed_date')
             ->get();
-            return response()->json(['attendants' => $attendances], 200);
+            return $attendances;
 
         }
         catch (\Exception $e) {

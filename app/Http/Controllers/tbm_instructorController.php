@@ -72,7 +72,7 @@ class tbm_InstructorController extends Controller
             $instructors = tbm_instructor::where('instructor_id', $request->user_id)
             ->whereNull('signed_date')
             ->get();
-            return response()->json(['tbm_instructors' => $instructors],200);
+            return  $instructors;
         }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
