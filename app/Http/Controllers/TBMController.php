@@ -70,15 +70,16 @@ class TBMController extends Controller
             // Get assigned instructor and person with their names
             $instructors = (new tbm_instructorController())->getTbmInstructor($id);
             $attendants = (new tbm_attendantController())->getTbmAttendants($id);
-
+            // dd($instructors);
             // Transform user IDs to user names for instructors and attendants
             foreach ($instructors as $instructor) {
-                $user = User::findOrFail($instructor->user_id);
+                 
+                $user = User::findOrFail($instructor->instructor_id);
                 $instructor->user_name = $user->name;
             }
 
             foreach ($attendants as $attendant) {
-                $user = User::findOrFail($attendant->user_id);
+                $user = User::findOrFail($attendant->attendant_id);
                 $attendant->user_name = $user->name;
             }
             // Transform user IDs to user names for prepared_by, checked_by, reviewed_by, and approved_by

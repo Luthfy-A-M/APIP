@@ -11,7 +11,7 @@ class tbm_attendantController extends Controller
     public function store(Request $request)
     {
         try {
-            $attendant = Tbm_Attendant::create($request->all());
+            $attendant = tbm_attendant::create($request->all());
             return response()->json(['attendant' => $attendant], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -21,7 +21,7 @@ class tbm_attendantController extends Controller
     public function show($id)
     {
         try {
-            $attendant = Tbm_Attendant::findOrFail($id);
+            $attendant = tbm_attendant::findOrFail($id);
             return response()->json(['attendant' => $attendant], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
@@ -31,7 +31,7 @@ class tbm_attendantController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $attendant = Tbm_Attendant::findOrFail($id);
+            $attendant = tbm_attendant::findOrFail($id);
             $attendant->update($request->all());
             return response()->json(['attendant' => $attendant], 200);
         } catch (\Exception $e) {
@@ -42,7 +42,7 @@ class tbm_attendantController extends Controller
     public function destroy(Request $request)
     {
         try {
-            $attendant = Tbm_Attendant::where('attendant_id', $request->attendant_id)
+            $attendant = tbm_attendant::where('attendant_id', $request->attendant_id)
                                        ->where('tbm_id', $request->tbm_id)
                                        ->firstOrFail();
             $attendant->delete();
@@ -55,7 +55,7 @@ class tbm_attendantController extends Controller
     public function getTbmAttendants($tbm_id)
     {
         try {
-            $attendants = Tbm_Attendant::where('tbm_id', $tbm_id)->get();
+            $attendants = tbm_attendant::where('tbm_id', $tbm_id)->get();
             return $attendants;
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -66,7 +66,7 @@ class tbm_attendantController extends Controller
         try {
             $tbm_id = $request->tbm_id;
             $user_id = $request->user_id;
-            $attendance = Tbm_Attendant::where('tbm_id',$tbm_id)->where('attendant_id',$user_id)->firstOrFail();
+            $attendance = tbm_attendant::where('tbm_id',$tbm_id)->where('attendant_id',$user_id)->firstOrFail();
             return response()->json(['attendants' => $attendance], 200);
         }
         catch (\Exception $e) {
@@ -81,7 +81,7 @@ class tbm_attendantController extends Controller
             ],[
                 'user_id.required' => 'The User ID is required',
             ]);
-            $attendances = Tbm_Attendant::where('attendant_id', $request->user_id)
+            $attendances = tbm_attendant::where('attendant_id', $request->user_id)
             ->whereNull('signed_date')
             ->get();
             return $attendances;
@@ -97,7 +97,7 @@ class tbm_attendantController extends Controller
             //here we try to check if he really is the one who need to sign in
             $tbm_attendance_id  = $request->tbm_attendance_id;
             $tbm_attandance_user_id = $request->user_id;
-            $attendant = Tbm_Attendant::findOrFail($tbm_attendance_id);
+            $attendant = tbm_attendant::findOrFail($tbm_attendance_id);
             if($attendant->attendant_id == $tbm_attandance_user_id){
                 $attendant->update(['signed_date',now()]); //just update the signed date, nothing else
             }
