@@ -76,6 +76,7 @@ class DatabaseSeeder extends Seeder
              'title' => 'TBM Naik Crane' ,
              'pot_danger_point' => 'Jatoh',
              'most_danger_point' => 'Kecapit Crane',
+             'countermeasure' => 'finger point',
              'key_word' => 'Hati Hati',
              'prepared_by' => '1',
              'checked_by' => '2',

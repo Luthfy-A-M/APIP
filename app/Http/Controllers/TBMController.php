@@ -279,6 +279,12 @@ class TBMController extends Controller
             $this->update($request);
             //make sure the TBM is ready to released by checking theres no empty or null value on TBM
             $tbms = TBM::findOrFail($id);
+            //check ownership of
+            if($tbms->prepared_by == $request->user_id){
+
+            }else{
+                return response()->json(" Kamu siapaa ");
+            }
 
                     // Define the validation rules
             $rules = [
@@ -336,9 +342,22 @@ class TBMController extends Controller
                 return response()->json(['errors' => 'Make Sure you assign atleast one instructor and attender']);
             }
 
+
+            $status = 'released';
+                if ($tbms->checked_by_sign_date !== null) {
+                    $status = 'review';
+                    if ($tbms->reviewed_by_sign_date !== null) {
+                        $status = 'approve1';
+                        if ($tbms->approved1_by_sign_date !== null) {
+                            $status = 'approve2';
+                        }
+                    }
+                }
+
+
             $tbms->update([
                 'prepared_by_sign_date' => now(),
-                'status' => 'released'
+                'status' => $status
             ]);
 
             return response()->json($tbms);
@@ -434,6 +453,55 @@ class TBMController extends Controller
         }
     }
 
+    public function signTbm(Request $request){
+        try{
+            $request->validate(['user_id' => 'required','tbm_id' => 'required']);
+            $tbm = TBM::FindorFail($request->tbm_id);
+            if($tbm->checked_by == $request->user_id  && $tbm->status == "released"){
+                $tbm->update(['checked_by_sign_date'=>now(),'status' => 'review' ]);
+            }
+            else if($tbm->reviewed_by == $request->user_id  && $tbm->status == "review"){
+                $tbm->update(['reviewed_by_sign_date'=>now(),'status' => 'approve1' ]);
+            }
+            else if($tbm->approved1_by == $request->user_id  && $tbm->status == "approve1"){
+                $tbm->update(['approved1_by_sign_date'=>now(),'status' => 'approve2' ]);
+            }
+            else if($tbm->approved2_by == $request->user_id  && $tbm->status == "approve2"){
+                $tbm->update(['approved2_by_sign_date'=>now(),'status' => 'completed' ]);
+            }else{
+                return response()->json('Kamu siapaa, kamu siapaa');
+            }
+            return response()->json($tbm);
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function rejectTbm(Request $request){
+        try{
+            $request->validate(['user_id' => 'required','tbm_id' => 'required']);
+            $tbm = TBM::FindorFail($request->tbm_id);
+            if($tbm->checked_by == $request->user_id  && $tbm->status == "released"){
+                $tbm->update(['status' => 'rejected' ]);
+            }
+            else if($tbm->reviewed_by == $request->user_id  && $tbm->status == "review"){
+                $tbm->update(['status' => 'rejected' ]);
+            }
+            else if($tbm->approved1_by == $request->user_id  && $tbm->status == "approve1"){
+                $tbm->update(['status' => 'rejected' ]);
+            }
+            else if($tbm->approved2_by == $request->user_id  && $tbm->status == "approve2"){
+                $tbm->update(['status' => 'rejected' ]);
+            }else{
+                return response()->json('Kamu siapaa, kamu siapaa');
+            }
+            return response()->json($tbm);
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 
 

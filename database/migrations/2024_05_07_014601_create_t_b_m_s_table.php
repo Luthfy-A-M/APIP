@@ -18,6 +18,7 @@ class CreateTBMSTable extends Migration
             $table->string('title')->nullable();
             $table->string('pot_danger_point')->nullable();
             $table->string('most_danger_point')->nullable();
+            $table->string('countermeasure')->nullable();
             $table->string('key_word')->nullable();
             $table->string('prepared_by');
             $table->dateTime('prepared_by_sign_date')->nullable();

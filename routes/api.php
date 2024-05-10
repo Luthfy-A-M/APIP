@@ -86,3 +86,13 @@ Route::post('/tbms/MyTBM/Unsigned', [TBMController::class,'getMyUnassignTBM']); 
 // {
 //      "user_id" : 1
 // }
+Route::post('/tbms/MyTBM/signing',[TBMController::class,'signTbm']);
+// {
+//      "user_id" : 1
+//      "tbm_id" : 2
+// }
+Route::post('/tbms/MyTBM/rejecting',[TBMController::class,'rejectTbm']);
+// {
+//      "user_id" : 1
+//      "tbm_id" : 2
+// }
