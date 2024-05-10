@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\tbm_instructor;
 use Illuminate\Http\Request;
 
-class tbm_InstructorController extends Controller
+class tbm_instructorController extends Controller
 {
     //only need store, signing, and delete
     public function store(Request $request)

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\TBMPrintController;
 
 //==============AUTH ROUTING============
 // Registration
@@ -96,3 +97,4 @@ Route::post('/tbms/MyTBM/rejecting',[TBMController::class,'rejectTbm']);
 //      "user_id" : 1
 //      "tbm_id" : 2
 // }
+Route::post('/tbmsprintout',[TBMPrintController::class,'generateReport']);

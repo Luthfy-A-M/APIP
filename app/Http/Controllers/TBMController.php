@@ -67,12 +67,36 @@ class TBMController extends Controller
             // Mengambil data TBMS berdasarkan ID
             $tbms = TBM::findOrFail($id);
             //get assigned instructor and person
+            // Get assigned instructor and person with their names
+            $instructors = (new tbm_instructorController())->getTbmInstructor($id);
+            $attendants = (new tbm_attendantController())->getTbmAttendants($id);
 
+            // Transform user IDs to user names for instructors and attendants
+            foreach ($instructors as $instructor) {
+                $user = User::findOrFail($instructor->user_id);
+                $instructor->user_name = $user->name;
+            }
+
+            foreach ($attendants as $attendant) {
+                $user = User::findOrFail($attendant->user_id);
+                $attendant->user_name = $user->name;
+            }
+            // Transform user IDs to user names for prepared_by, checked_by, reviewed_by, and approved_by
+            $preparedByUser = User::findOrFail($tbms->prepared_by);
+            $checkedByUser = $tbms->checked_by ? User::findOrFail($tbms->checked_by) : null;
+            $reviewedByUser = $tbms->reviewed_by ? User::findOrFail($tbms->reviewed_by) : null;
+            $approved1ByUser = $tbms->approved1_by ? User::findOrFail($tbms->approved1_by) : null;
+            $approved2ByUser = $tbms->approved2_by ? User::findOrFail($tbms->approved2_by) : null;
             // Mengembalikan data dalam bentuk JSON
             return response()->json([
                 'tbm' => $tbms ,
-                'tbm_instructor' => (new tbm_instructorController())->getTbmInstructor($id) ,
-                'tbm_attendance' => (new tbm_attendantController())->getTbmAttendants(($id))
+                'tbm_instructor' => $instructors,
+                'tbm_attendance' => $attendants,
+                'prepared_by_name' => $preparedByUser->name,
+                'checked_by_name' => $checkedByUser ? $checkedByUser->name : null,
+                'reviewed_by_name' => $reviewedByUser ? $reviewedByUser->name : null,
+                'approved1_by_name' => $approved1ByUser ? $approved1ByUser->name : null,
+                'approved2_by_name' => $approved2ByUser ? $approved2ByUser->name : null,
             ]);
         } catch (\Exception $e) {
             // Mengembalikan pesan kesalahan jika terjadi kesalahan
