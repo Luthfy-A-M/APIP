@@ -11,15 +11,15 @@ class CreateTBMSTable extends Migration
         Schema::create('t_b_m_s', function (Blueprint $table) {
             $table->id();
             $table->string('dept_code');
-            $table->string('section')->nullable();
-            $table->string('shift')->nullable();
-            $table->dateTime('date')->nullable();
-            $table->string('time')->nullable();
-            $table->string('title')->nullable();
-            $table->string('pot_danger_point')->nullable();
-            $table->string('most_danger_point')->nullable();
-            $table->string('countermeasure')->nullable();
-            $table->string('key_word')->nullable();
+            $table->text('section')->nullable(); // Changed to text and nullable
+            $table->text('shift')->nullable(); // Changed to text and nullable
+            $table->date('date')->nullable(); // Changed to date and nullable
+            $table->time('time')->nullable(); // Changed to time and nullable
+            $table->text('title')->nullable(); // Changed to text and nullable
+            $table->text('pot_danger_point')->nullable(); // Changed to text and nullable
+            $table->text('most_danger_point')->nullable(); // Changed to text and nullable
+            $table->text('countermeasure')->nullable(); // Changed to text and nullable
+            $table->text('key_word')->nullable(); // Changed to text and nullable
             $table->string('prepared_by');
             $table->dateTime('prepared_by_sign_date')->nullable();
             $table->string('checked_by')->nullable();
