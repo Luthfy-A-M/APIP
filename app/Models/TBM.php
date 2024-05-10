@@ -11,27 +11,28 @@ class TBM extends Model
 
     protected $fillable = [
         'dept_code',
-         'section',
-          'shift',
-           'date' => 'datetime',
-            'time' ,
-             'title' ,
-             'pot_danger_point',
-             'most_danger_point',
-             'countermeasure', //new add forgot
-             'key_word',
-             'prepared_by',
-             'prepared_by_sign_date',
-             'checked_by',
-             'checked_by_sign_date',
-             'reviewed_by',
-             'reviewed_by_sign_date',
-             'approved1_by',
-             'approved1_by_sign_date',
-             'approved2_by',
-             'approved2_by_sign_date',
-             'status'
+        'section',
+        'shift',
+        'date',
+        'time',
+        'title',
+        'pot_danger_point',
+        'most_danger_point',
+        'countermeasure', // Added
+        'key_word',
+        'prepared_by',
+        'prepared_by_sign_date',
+        'checked_by',
+        'checked_by_sign_date',
+        'reviewed_by',
+        'reviewed_by_sign_date',
+        'approved1_by',
+        'approved1_by_sign_date',
+        'approved2_by',
+        'approved2_by_sign_date',
+        'status'
     ];
+
 
 
 }
