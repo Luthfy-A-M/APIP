@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\tbm_attendantController; //tbm attendant
-use App\Http\Controllers\tbm_InstructorController; //tbm instructor
+use App\Http\Controllers\tbm_instructorController; //tbm instructor
 
 use App\Models\TBM;
 use App\Models\User;
@@ -70,8 +70,8 @@ class TBMController extends Controller
 
             // Mengembalikan data dalam bentuk JSON
             return response()->json([
-                'tbm' => $tbms , 
-                'tbm_instructor' => (new tbm_InstructorController())->getTbmInstructor($id) ,
+                'tbm' => $tbms ,
+                'tbm_instructor' => (new tbm_instructorController())->getTbmInstructor($id) ,
                 'tbm_attendance' => (new tbm_attendantController())->getTbmAttendants(($id))
             ]);
         } catch (\Exception $e) {
@@ -290,6 +290,7 @@ class TBMController extends Controller
                 'title' => 'required',
                 'pot_danger_point' => 'required',
                 'most_danger_point' => 'required',
+                'countermeasure' => 'required',
                 'key_word' => 'required',
                 'prepared_by' => 'required',
                 'checked_by' => 'required',
@@ -309,6 +310,7 @@ class TBMController extends Controller
                 'title.required' => 'The title is required.',
                 'pot_danger_point.required' => 'The pot danger point is required.',
                 'most_danger_point.required' => 'The most danger point is required.',
+                'countermeasure' => 'The countermeasure of most danger point is required',
                 'key_word.required' => 'The key word is required.',
                 'prepared_by.required' => 'The prepared by is required.',
                 'checked_by.required' => 'The checked by is required.',
@@ -346,9 +348,9 @@ class TBMController extends Controller
         }
     }
 
-    
 
-    
+
+
 
     public function getMyUnassignTBM(Request $request)
     {
@@ -356,64 +358,81 @@ class TBMController extends Controller
             $request->validate([
                 'user_id' => 'required'
             ]);
-    
+
             // Initialize an empty collection to store merged results
             $mergedTbms = collect();
-    
+
             // Query and merge tbms where the user is assigned as different signers
             $tbmsChecker = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('checked_by', $request->user_id)
                 ->whereNotNull('prepared_by_sign_date')
                 ->whereNull('checked_by_sign_date')
                 ->get();
-    
+
             $tbmsReviewer = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('reviewed_by', $request->user_id)
                 ->whereNotNull('checked_by_sign_date')
                 ->whereNull('reviewed_by_sign_date')
                 ->get();
-    
+
             $tbmsApprove1 = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('approved1_by', $request->user_id)
                 ->whereNotNull('reviewed_by_sign_date')
                 ->whereNull('approved1_by_sign_date')
                 ->get();
-    
+
             $tbmsApprove2 = TBM::select('title', 'id', 'date', 'prepared_by')
                 ->where('approved2_by', $request->user_id)
                 ->whereNotNull('approved1_by_sign_date')
                 ->whereNull('approved2_by_sign_date')
                 ->get();
-    
+
+            //Get MyTbms as instructor
+            $tbm_instructor = (new tbm_instructorController)->getMyUnsignedTbmInstructor($request);
+            //as tbm attender
+            $tbm_attendant = (new tbm_attendantController)->getMyUnsignedTbmAttendance($request);
             // Merge all collections into a single collection
             $mergedTbms = $mergedTbms->merge($tbmsChecker)
                 ->merge($tbmsReviewer)
                 ->merge($tbmsApprove1)
                 ->merge($tbmsApprove2);
-    
+
+
             // Get unique user IDs from merged TBMs
             $userIds = $mergedTbms->pluck('prepared_by')->unique()->toArray();
-    
+
             // Fetch user names based on user IDs
             $users = User::whereIn('id', $userIds)->get()->keyBy('id');
-    
+
             // Attach user names to each TBM
             foreach ($mergedTbms as $tbm) {
                 $tbm->prepared_by_user = $users[$tbm->prepared_by] ?? null;
             }
-    
+
             // Check if there are any TBM records found
-            if ($mergedTbms->isEmpty()) {
+            if ($mergedTbms->isEmpty() && $tbm_attendant->isEmpty() && $tbm_instructor->isEmpty()) {
                 return response()->json('Nothing to be signed');
             }
-    
+
             // Return the merged TBM records
-            return response()->json($mergedTbms);
+            return response()->json(['Important' => $mergedTbms, 'Attendance' => $tbm_attendant , 'Instructor' => $tbm_instructor]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
+    public function getMyTbm(Request $request){
+        try{
+            $request->validate(
+                ['user_id' => 'required']
+            );
+            $mytbm = TBM::where('prepared_by', $request->user_id)->get();
+            return response()->json($mytbm);
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
 
 

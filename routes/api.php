@@ -47,7 +47,7 @@ Route::delete('/tbms/{id}', [TBMController::class, 'destroy']);
 
 // Search TBM data by parameters
 Route::get('/tbms/create/search/{param1}/{param2}', [TBMController::class, 'searchby']); //idk for what
-Route::get('/tbms/create/Getassignableperson', [TBMController::class, 'getAssignablePerson']);
+Route::post('/tbms/create/Getassignableperson', [TBMController::class, 'getAssignablePerson']);
 // {
 //     "tbm_id": [
 //       "The tbm id field is required."
@@ -61,23 +61,28 @@ Route::post('/tbms/create/assignattendant', [TBMController::class, 'assignAttend
 //     "tbm_id": 1,
 //     "attendant_id": 3
 // }
-Route::get('/tbms/create/unassignattendant', [TBMController::class, 'unassignAttendant']);
+Route::post('/tbms/create/unassignattendant', [TBMController::class, 'unassignAttendant']);
 
 Route::post('/tbms/create/assigninstructor', [TBMController::class, 'assignInstructor']);
 // {
 //     "tbm_id": 1,
 //     "instructor_id": 3
 // }
-Route::get('/tbms/create/unassigninstructor', [TBMController::class, 'unassignInstructor']); //untuk assign dan unassign gaperlu check kepemilikannya malaz
+Route::post('/tbms/create/unassigninstructor', [TBMController::class, 'unassignInstructor']); //untuk assign dan unassign gaperlu check kepemilikannya malaz
 
 Route::post('/tbms/create/release',[TBMController::class, 'postReleaseTbm']); //when releasing the TBM
 // {
-//     "tbm_id": 3 
+//     "tbm_id": 3
 //      "user_id" : 1
 // }
 //bisa sekalian update tbm, beuh
 //ketentuan -> harus udah assign instructor dan attendant sebelum release, masa iya gaada orangnya cok
 //kalo belom keluar error
-
-Route::get('/tbms/MyTBM/get', [TBMController::class,'getMyUnassignTBM']); //get tbm yang belom ditandatangan
-
+Route::post('/tbms/MyTBM/',[TBMController::class,'getMyTbm']); //get tbm created by me
+// {
+//      "user_id" : 1
+// }
+Route::post('/tbms/MyTBM/Unsigned', [TBMController::class,'getMyUnassignTBM']); //get tbm yang belom ditandatangan
+// {
+//      "user_id" : 1
+// }

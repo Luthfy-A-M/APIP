@@ -18,6 +18,7 @@ class TBM extends Model
              'title' ,
              'pot_danger_point',
              'most_danger_point',
+             'countermeasure', //new add forgot
              'key_word',
              'prepared_by',
              'prepared_by_sign_date',

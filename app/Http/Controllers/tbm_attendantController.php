@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tbm_Attendant;
+use App\Models\tbm_attendant;
 use Illuminate\Http\Request;
 
 class tbm_attendantController extends Controller
@@ -73,7 +73,7 @@ class tbm_attendantController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function getMyUnsignedTbmAttendance(Request $request){
         try {
             $request->validate([
