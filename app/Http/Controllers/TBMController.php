@@ -433,8 +433,16 @@ class TBMController extends Controller
 
             //Get MyTbms as instructor
             $tbm_instructor = (new tbm_instructorController)->getMyUnsignedTbmInstructor($request);
+            foreach($tbm_instructor as $tbmI){
+                $tbmnya = TBM::findOrFail($tbmI->tbm_id);
+                $tbmI->tbm = $tbmnya;
+            }
             //as tbm attender
             $tbm_attendant = (new tbm_attendantController)->getMyUnsignedTbmAttendance($request);
+            foreach($tbm_instructor as $tbmA){
+                $tbmnya = TBM::findOrFail($tbmA->tbm_id);
+                $tbmA->tbm = $tbmnya;
+            }
             // Merge all collections into a single collection
             $mergedTbms = $mergedTbms->merge($tbmsChecker)
                 ->merge($tbmsReviewer)

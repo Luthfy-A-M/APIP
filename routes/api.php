@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\tbm_attendantController;
+use App\Http\Controllers\tbm_instructorController;
+
 use App\Http\Controllers\TBMPrintController;
 
 //==============AUTH ROUTING============
@@ -98,3 +101,16 @@ Route::post('/tbms/MyTBM/rejecting',[TBMController::class,'rejectTbm']);
 //      "tbm_id" : 2
 // }
 Route::post('/tbmsprintout',[TBMPrintController::class,'generateReport']);
+// {
+//     "tbm_id" : 1
+// }
+Route::post('/tbms/myTBM/signAttendance',[tbm_attendantController::class,'signTbmAttendants']);
+// {
+// 'tbm_attendance_id'=>'required',
+// 'user_id' => 'required
+// }
+Route::post('/tbms/myTBM/signInstructor',[tbm_instructorController::class,'signTbmInstructor']);
+// {
+//     'user_id' => 'required',
+//     'tbm_instructor_id' => 'required'
+// }

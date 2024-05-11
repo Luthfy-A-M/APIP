@@ -95,6 +95,10 @@ class tbm_attendantController extends Controller
     public function signTbmAttendants(Request $request){
         try {
             //here we try to check if he really is the one who need to sign in
+            $request->validate([
+                'tbm_attendance_id'=>'required',
+                'user_id' => 'required'
+            ]);
             $tbm_attendance_id  = $request->tbm_attendance_id;
             $tbm_attandance_user_id = $request->user_id;
             $attendant = tbm_attendant::findOrFail($tbm_attendance_id);
