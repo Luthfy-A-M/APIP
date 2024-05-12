@@ -105,8 +105,11 @@ class tbm_attendantController extends Controller
             if($attendant->attendant_id == $tbm_attandance_user_id){
                 $attendant->signed_date = now();
                 $attendant->save();
+                return response()->json(['success' => 'tbm is signed successfully','tbm attendant' => $attendant], 204);
             }
-            return response()->json(['tbm attendance' => $attendant], 200); //return updated tbm_attendant
+            else{
+                return response()->json(['error' => 'You are not authorized to sign this attendant'], 500);
+            }
         }
         catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
