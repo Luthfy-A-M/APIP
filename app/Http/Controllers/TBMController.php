@@ -466,6 +466,17 @@ class TBMController extends Controller
                 return response()->json('Nothing to be signed');
             }
 
+            if($mergedTbms->isEmpty()){
+                $mergedTbms = 'Nothing to be signed';
+            }
+            if($tbm_attendant->isEmpty()){
+                $tbm_attendant = 'Nothing to be signed';
+            }
+            if($tbm_instructor->isEmpty()){
+                $tbm_instructor = 'Nothing to be signed';
+            }
+
+
             // Return the merged TBM records
             return response()->json(['Important' => $mergedTbms, 'Attendance' => $tbm_attendant , 'Instructor' => $tbm_instructor]);
         } catch (\Exception $e) {
