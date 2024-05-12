@@ -103,7 +103,8 @@ class tbm_attendantController extends Controller
             $tbm_attandance_user_id = $request->user_id;
             $attendant = tbm_attendant::findOrFail($tbm_attendance_id);
             if($attendant->attendant_id == $tbm_attandance_user_id){
-                $attendant->update(['signed_date',now()]); //just update the signed date, nothing else
+                $attendant->signed_date = now();
+                $attendant->save();
             }
             return response()->json(['tbm attendance' => $attendant], 200); //return updated tbm_attendant
         }
