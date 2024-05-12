@@ -194,7 +194,7 @@ class TBMController extends Controller
             ->whereNotIn('id', $excludedInstructorIds)
             ->get();
 
-            return response()->json($persons);
+            return response()->json(['persons' => $persons]);
         }
         catch(\Exception $e){
             return response()->json(['error' => $e->getMessage()], 500);
