@@ -22,11 +22,11 @@ class TBMController extends Controller
             // Mengambil semua data TBMS
             $tbms = TBM::all();
             foreach($tbms as $tbm){
-                $tbm->prepared_by = User::findOrFail($tbm->prepared_by);
-                $tbm->checked_by = $tbm->checked_by ? User::findOrFail($tbm->checked_by) : null;
-                $tbm->reviewed_by = $tbm->reviewed_by ? User::findOrFail($tbm->reviewed_by) : null;
-                $tbm->approved1_by = $tbm->approved1_by ? User::findOrFail($tbm->approved1_by) : null;
-                $tbm->approved2_by = $tbm->approved2_by ? User::findOrFail($tbm->approved2_by) : null;
+                $tbm->prepared_by = User::findOrFail($tbm->prepared_by)->name;
+                $tbm->checked_by = $tbm->checked_by ? User::findOrFail($tbm->checked_by)->name : null;
+                $tbm->reviewed_by = $tbm->reviewed_by ? User::findOrFail($tbm->reviewed_by)->name : null;
+                $tbm->approved1_by = $tbm->approved1_by ? User::findOrFail($tbm->approved1_by)->name : null;
+                $tbm->approved2_by = $tbm->approved2_by ? User::findOrFail($tbm->approved2_by)->name : null;
             }
             
             // Mengembalikan data dalam bentuk JSON
