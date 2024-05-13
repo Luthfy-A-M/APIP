@@ -151,7 +151,9 @@ class TBMController extends Controller
         try {
             // Mengambil data TBMS berdasarkan ID
             $tbms = TBM::findOrFail($id);
-
+            //delete instructor or attendance relations
+            (new tbm_instructorController())->onTbmDestroyed($id);
+            (new tbm_attendantController())->onTbmDestroyed($id);
             // Menghapus data TBMS
             $tbms->delete();
 

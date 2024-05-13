@@ -51,6 +51,18 @@ class tbm_instructorController extends Controller
             return response()->json(['error' => $e->getMessage()], 404);
         }
     }
+    public function onTbmDestroyed($tbm_id){
+        try{
+            $instructors = tbm_instructor::where('tbm_id', $tbm_id)->get();
+            foreach($instructors as $instruct){
+                $instruct->delete();
+            }
+            return;
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
+    }
 
     public function getTbmInstructor($tbm_id)
     {

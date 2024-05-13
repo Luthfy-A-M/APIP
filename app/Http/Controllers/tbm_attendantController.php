@@ -52,6 +52,19 @@ class tbm_attendantController extends Controller
         }
     }
 
+    public function onTbmDestroyed($tbm_id){
+        try{
+            $attendants = tbm_attendant::where('tbm_id', $tbm_id)->get();
+            foreach($attendants as $attendant){
+                $attendant->delete();
+            }
+            return;
+        }
+        catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
+    }
+
     public function getTbmAttendants($tbm_id)
     {
         try {
