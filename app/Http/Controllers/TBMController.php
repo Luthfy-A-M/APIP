@@ -28,7 +28,7 @@ class TBMController extends Controller
                 $tbm->approved1_by = $tbm->approved1_by ? User::findOrFail($tbm->approved1_by)->name : null;
                 $tbm->approved2_by = $tbm->approved2_by ? User::findOrFail($tbm->approved2_by)->name : null;
             }
-            
+
             // Mengembalikan data dalam bentuk JSON
             return response()->json($tbms);
         } catch (\Exception $e) {
@@ -80,7 +80,7 @@ class TBMController extends Controller
             // dd($instructors);
             // Transform user IDs to user names for instructors and attendants
             foreach ($instructors as $instructor) {
-                 
+
                 $user = User::findOrFail($instructor->instructor_id);
                 $instructor->user_name = $user->name;
             }
@@ -469,18 +469,18 @@ class TBMController extends Controller
             }
 
             // Check if there are any TBM records found
-            if ($mergedTbms->isEmpty() && $tbm_attendant->isEmpty() && $tbm_instructor->isEmpty()) {
-                return response()->json('Nothing to be signed');
-            }
+            // if ($mergedTbms->isEmpty() && $tbm_attendant->isEmpty() && $tbm_instructor->isEmpty()) {
+            //     return response()->json('Nothing to be signed');
+            // }
 
             if($mergedTbms->isEmpty()){
-                $mergedTbms = 'Nothing to be signed';
+                $mergedTbms = [];
             }
             if($tbm_attendant->isEmpty()){
-                $tbm_attendant = 'Nothing to be signed';
+                $tbm_attendant = [];
             }
             if($tbm_instructor->isEmpty()){
-                $tbm_instructor = 'Nothing to be signed';
+                $tbm_instructor = [];
             }
 
 
